@@ -1,0 +1,700 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ShopNest - Admin Panel{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <style>
+    /* ========================================
+       ADMIN LAYOUT - SIDEBAR + MAIN CONTENT
+       Admin uses a sidebar layout instead of
+       top navbar for better dashboard UX
+    ======================================== */
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f4f5f7;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ========================================
+       SIDEBAR NAVIGATION
+    ======================================== */
+    .sidebar {
+      width: 240px;
+      background: #1a1a1a;
+      color: #ccc;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Sidebar logo area */
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 1.5rem 1.2rem 1rem;
+      border-bottom: 1px solid #2a2a2a;
+      text-decoration: none;
+    }
+
+    .logo-box {
+      background: #e74c3c;
+      color: #fff;
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .sidebar-logo span {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* Admin role badge */
+    .admin-badge {
+      background: #3d0c0c;
+      color: #e74c3c;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-left: auto;
+      border: 1px solid #721c24;
+    }
+
+    /* Sidebar section label */
+    .sidebar-section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #555;
+      padding: 1.2rem 1.2rem 0.4rem;
+    }
+
+    /* Sidebar nav links */
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.2rem;
+      color: #aaa;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      background: #2a2a2a;
+      color: #fff;
+      border-left-color: #e74c3c;
+    }
+
+    /* Active sidebar link */
+    .sidebar-nav a.active {
+      background: #2a2a2a;
+      color: #fff;
+      border-left-color: #e74c3c;
+    }
+
+    .sidebar-nav a i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    /* Sidebar divider */
+    .sidebar-divider {
+      border: none;
+      border-top: 1px solid #2a2a2a;
+      margin: 0.5rem 0;
+    }
+
+    /* Logout button at bottom of sidebar */
+    .sidebar-logout {
+      margin-top: auto;
+      padding: 1rem 1.2rem;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .sidebar-logout a {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: #e74c3c;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+
+    .sidebar-logout a:hover {
+      background: #2a2a2a;
+    }
+
+    /* ========================================
+       MAIN CONTENT AREA (right of sidebar)
+    ======================================== */
+    .main-content {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* Top bar inside main content */
+    .topbar {
+      background: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .topbar-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #1a1a1a;
+    }
+
+    /* Admin profile info in topbar */
+    .topbar-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .topbar-profile .admin-name {
+      font-size: 0.9rem;
+      color: #444;
+    }
+
+    .topbar-profile .avatar {
+      background: #e74c3c;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    /* ========================================
+       DASHBOARD STATS CARDS
+    ======================================== */
+    .page-body {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    }
+
+    /* Colored icon circle */
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    /* Different colors for each stat */
+    .icon-red   { background: #fde8e8; color: #e74c3c; }
+    .icon-green { background: #e8f8f0; color: #27ae60; }
+    .icon-blue  { background: #e8f0fd; color: #2980b9; }
+    .icon-orange{ background: #fef3e8; color: #e67e22; }
+    .icon-purple{ background: #f3e8fd; color: #8e44ad; }
+
+    .stat-info .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      line-height: 1;
+    }
+
+    .stat-info .stat-label {
+      font-size: 0.82rem;
+      color: #888;
+      margin-top: 0.2rem;
+    }
+
+    /* ========================================
+       QUICK MANAGEMENT CARDS
+    ======================================== */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+    }
+
+    .management-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    /* Management action card */
+    .manage-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      text-decoration: none;
+      color: #1a1a1a;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .manage-card:hover {
+      border-color: #e74c3c;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(231,76,60,0.12);
+    }
+
+    .manage-card .card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .manage-card h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .manage-card p {
+      font-size: 0.82rem;
+      color: #888;
+    }
+
+    /* ========================================
+       RECENT ACTIVITY TABLE
+    ======================================== */
+    .table-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    table th {
+      background: #fdf4f4;
+      color: #1a1a1a;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid #f5d0cc;
+      font-weight: 600;
+    }
+
+    table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #f5f5f5;
+      color: #444;
+    }
+
+    table tr:hover td {
+      background: #fdf9f9;
+    }
+
+    /* Status badges */
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .status-pending   { background: #fff3cd; color: #856404; }
+    .status-completed  { background: #d1f5e0; color: #155724; }
+    .status-cancelled  { background: #f8d7da; color: #721c24; }
+    .status-approved   { background: #d1f5e0; color: #155724; }
+    .status-pending-approval { background: #fff3cd; color: #856404; }
+
+    /* Action links inside table */
+    .table-action {
+      color: #e74c3c;
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-right: 0.8rem;
+    }
+
+    .table-action:hover {
+      text-decoration: underline;
+    }
+
+    /* ========================================
+       FOOTER
+    ======================================== */
+    .admin-footer {
+      background: #fff;
+      border-top: 1px solid #eee;
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.82rem;
+      color: #999;
+    }
+
+    /* ========================================
+       RESPONSIVE - hide sidebar on small screens
+    ======================================== */
+    @media (max-width: 768px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo span, .admin-badge, .sidebar-section-label,
+      .sidebar-nav a span { display: none; }
+      .main-content { margin-left: 60px; }
+      .sidebar-nav a { justify-content: center; padding: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+<aside class="sidebar">
+
+  <!-- Logo -->
+  <a href="{% url 'admin_home' %}" class="sidebar-logo">
+    <div class="logo-box">S</div>
+    <span>ShopNest</span>
+    <span class="admin-badge">Admin</span>
+  </a>
+
+  <!-- Main navigation -->
+  <nav class="sidebar-nav">
+
+    <!-- MAIN SECTION -->
+    <div class="sidebar-section-label">Main</div>
+
+    <a href="{% url 'admin_home' %}" class="active">
+      <i class="fa-solid fa-gauge"></i>
+      <span>Dashboard</span>
+    </a>
+
+    <hr class="sidebar-divider">
+
+    <!-- MANAGEMENT SECTION -->
+    <div class="sidebar-section-label">Management</div>
+
+    <!-- Manage Users (Customers) -->
+    <a href="#">
+      <i class="fa-solid fa-users"></i>
+      <span>Manage Users</span>
+    </a>
+
+    <!-- Manage Sellers -->
+    <a href="#">
+      <i class="fa-solid fa-store"></i>
+      <span>Manage Sellers</span>
+    </a>
+
+    <!-- Manage Products -->
+    <a href="#">
+      <i class="fa-solid fa-box-open"></i>
+      <span>Manage Products</span>
+    </a>
+
+    <!-- Manage Orders -->
+    <a href="#">
+      <i class="fa-regular fa-clipboard-list"></i>
+      <span>Manage Orders</span>
+    </a>
+
+    <hr class="sidebar-divider">
+
+    <!-- SETTINGS SECTION -->
+    <div class="sidebar-section-label">Account</div>
+
+    <!-- Admin Profile -->
+    <a href="#">
+      <i class="fa-regular fa-user"></i>
+      <span>My Profile</span>
+    </a>
+
+  </nav>
+
+  <!-- Logout at bottom -->
+  <div class="sidebar-logout">
+    <a href="#">
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span>Logout</span>
+    </a>
+  </div>
+
+</aside>
+
+<!-- ================= MAIN CONTENT ================= -->
+<div class="main-content">
+
+  <!-- Top bar with page title and admin info -->
+  <div class="topbar">
+    <div class="topbar-title">{% block page_title %}Admin Dashboard{% endblock %}</div>
+    <div class="topbar-profile">
+      <span class="admin-name">{{ user.username }}</span>
+      <!-- Avatar showing first letter of admin name -->
+      <div class="avatar">{{ user.username|first|upper }}</div>
+    </div>
+  </div>
+
+  <!-- ================= PAGE CONTENT ================= -->
+  {% block content %}
+
+  <div class="page-body">
+
+    <!-- ---- STATS ROW ---- -->
+    <div class="stats-grid">
+
+      <div class="stat-card">
+        <div class="stat-icon icon-blue">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_users|default:"0" }}</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-green">
+          <i class="fa-solid fa-store"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_sellers|default:"0" }}</div>
+          <div class="stat-label">Total Sellers</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-orange">
+          <i class="fa-solid fa-box-open"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_products|default:"0" }}</div>
+          <div class="stat-label">Total Products</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-red">
+          <i class="fa-regular fa-clipboard-list"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ total_orders|default:"0" }}</div>
+          <div class="stat-label">Total Orders</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon icon-purple">
+          <i class="fa-solid fa-clock"></i>
+        </div>
+        <div class="stat-info">
+          <div class="stat-number">{{ pending_sellers|default:"0" }}</div>
+          <div class="stat-label">Pending Approvals</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ---- QUICK MANAGEMENT CARDS ---- -->
+    <h2 class="section-title">Quick Management</h2>
+    <div class="management-grid">
+
+      <a href="#" class="manage-card">
+        <div class="card-icon">👤</div>
+        <h3>Manage Users</h3>
+        <p>View, search & delete customers</p>
+      </a>
+
+      <a href="#" class="manage-card">
+        <div class="card-icon">🏪</div>
+        <h3>Manage Sellers</h3>
+        <p>Approve, reject & delete sellers</p>
+      </a>
+
+      <a href="#" class="manage-card">
+        <div class="card-icon">📦</div>
+        <h3>Manage Products</h3>
+        <p>View & delete all products</p>
+      </a>
+
+      <a href="#" class="manage-card">
+        <div class="card-icon">📋</div>
+        <h3>Manage Orders</h3>
+        <p>View & update order status</p>
+      </a>
+
+    </div>
+
+    <!-- ---- RECENT ORDERS TABLE ---- -->
+    <h2 class="section-title">Recent Orders</h2>
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in recent_orders %}
+          <tr>
+            <td>#{{ order.order_id }}</td>
+            <td>{{ order.customer_name }}</td>
+            <td>{{ order.product_name }}</td>
+            <td>Rs. {{ order.total_price }}</td>
+            <td>
+              <span class="status-badge status-{{ order.status|lower }}">
+                {{ order.status }}
+              </span>
+            </td>
+            <td>
+              <!-- View & update order actions -->
+              <a href="#" class="table-action">
+                <i class="fa-regular fa-eye"></i> View
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+            <tr>
+              <td colspan="6" style="text-align:center;color:#999;padding:2rem;">
+                No orders yet.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ---- PENDING SELLER APPROVALS ---- -->
+    <h2 class="section-title" style="margin-top:2rem;">Pending Seller Approvals</h2>
+    <div class="table-box">
+      <table>
+        <thead>
+          <tr>
+            <th>Seller Name</th>
+            <th>Shop Name</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for seller in pending_sellers_list %}
+          <tr>
+            <td>{{ seller.username }}</td>
+            <td>{{ seller.shop_name }}</td>
+            <td>{{ seller.email }}</td>
+            <td>
+              <span class="status-badge status-pending-approval">Pending</span>
+            </td>
+            <td>
+              <!-- Approve link -->
+              <a href="{% url 'approve_seller' seller.id %}" class="table-action" style="color:#27ae60;">
+                <i class="fa-solid fa-check"></i> Approve
+              </a>
+              <!-- Reject link -->
+              <a href="{% url 'reject_seller' seller.id %}" class="table-action">
+                <i class="fa-solid fa-xmark"></i> Reject
+              </a>
+            </td>
+          </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" style="text-align:center;color:#999;padding:1.5rem;">
+                No pending approvals.
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- end page-body -->
+
+  {% endblock %}
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="admin-footer">
+    &copy; 2024 <strong>ShopNest</strong> Admin Panel | All Rights Reserved
+  </footer>
+
+</div><!-- end main-content -->
+
+</body>
+</html>

@@ -1,0 +1,612 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ShopNest - Seller Dashboard{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <style>
+    /* ========================================
+       SELLER NAVBAR STYLES
+       Green accent to distinguish from user/admin
+    ======================================== */
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      text-decoration: none;
+    }
+
+    /* Seller logo box uses green accent */
+    .logo-box {
+      background: #2ecc71;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    /* Seller badge shown next to logo */
+    .seller-badge {
+      background: #e8f8f0;
+      color: #27ae60;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      border: 1px solid #a9e4c0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #444;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #27ae60;
+    }
+
+    /* Active link uses green underline for seller */
+    .nav-links a.active {
+      color: #27ae60;
+      border-bottom: 2px solid #27ae60;
+      padding-bottom: 2px;
+    }
+
+    /* Profile dropdown */
+    .profile-dropdown {
+      position: relative;
+    }
+
+    .profile-btn {
+      background: #f4f4f4;
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #444;
+      transition: background 0.2s;
+    }
+
+    .profile-btn:hover {
+      background: #e0f5ea;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 48px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 170px;
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    .profile-dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1.1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: #333;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .dropdown-menu a:hover {
+      background: #f0faf4;
+    }
+
+    /* Logout in red */
+    .dropdown-menu .logout-link {
+      color: #e74c3c;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* ========================================
+       SELLER HERO / DASHBOARD HEADER
+    ======================================== */
+    .seller-hero {
+      background: linear-gradient(135deg, #1a5c35 0%, #27ae60 100%);
+      color: #fff;
+      padding: 3.5rem 2rem;
+      text-align: center;
+    }
+
+    .seller-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .seller-hero p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      opacity: 0.85;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      background: #fff;
+      color: #27ae60;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      text-decoration: none;
+      margin: 0 0.4rem;
+      transition: opacity 0.2s;
+    }
+
+    .hero-btn:hover {
+      opacity: 0.88;
+    }
+
+    /* ========================================
+       SELLER STATS CARDS
+    ======================================== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.2rem;
+      padding: 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid #e8f5ee;
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      transition: box-shadow 0.2s;
+    }
+
+    .stat-card:hover {
+      box-shadow: 0 6px 20px rgba(46,204,113,0.12);
+    }
+
+    .stat-card .stat-icon {
+      font-size: 2rem;
+      color: #27ae60;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-card .stat-number {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .stat-card .stat-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      color: #777;
+      margin-top: 0.2rem;
+    }
+
+    /* ========================================
+       QUICK ACTION BUTTONS
+    ======================================== */
+    .quick-actions {
+      background: #f9fdf9;
+      border-top: 1px solid #e8f0eb;
+      padding: 1.5rem 2rem;
+      text-align: center;
+    }
+
+    .quick-actions h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.3rem;
+      color: #1a1a1a;
+      margin-bottom: 1rem;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #27ae60;
+      color: #fff;
+      padding: 0.65rem 1.4rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      text-decoration: none;
+      margin: 0.3rem;
+      transition: background 0.2s;
+    }
+
+    .action-btn:hover {
+      background: #1e8449;
+    }
+
+    /* Secondary action button (outline style) */
+    .action-btn-outline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: #27ae60;
+      border: 2px solid #27ae60;
+      padding: 0.65rem 1.4rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 500;
+      text-decoration: none;
+      margin: 0.3rem;
+      transition: all 0.2s;
+    }
+
+    .action-btn-outline:hover {
+      background: #27ae60;
+      color: #fff;
+    }
+
+    /* ========================================
+       RECENT ORDERS TABLE
+    ======================================== */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 2rem 0 1rem;
+    }
+
+    .table-container {
+      max-width: 900px;
+      margin: 0 auto 3rem;
+      padding: 0 2rem;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.92rem;
+    }
+
+    table th {
+      background: #f4faf6;
+      color: #1a1a1a;
+      padding: 0.8rem 1rem;
+      text-align: left;
+      border-bottom: 2px solid #d5ead9;
+      font-weight: 600;
+    }
+
+    table td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #f0f0f0;
+      color: #444;
+    }
+
+    table tr:hover td {
+      background: #f9fdf9;
+    }
+
+    /* Order status badge */
+    .status-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status-pending  { background: #fff3cd; color: #856404; }
+    .status-completed { background: #d1f5e0; color: #155724; }
+    .status-cancelled { background: #f8d7da; color: #721c24; }
+
+    /* ========================================
+       FOOTER (consistent across all pages)
+    ======================================== */
+    .footer {
+      background: #1a1a1a;
+      color: #ccc;
+      padding: 2.5rem 2rem 1rem;
+    }
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .footer-section h3, .footer-section h4 {
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-section p, .footer-section li {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    .footer-section ul { list-style: none; padding: 0; }
+    .footer-section ul li a { color: #aaa; text-decoration: none; }
+    .footer-section ul li a:hover { color: #2ecc71; }
+
+    .footer-bottom {
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      color: #666;
+      border-top: 1px solid #333;
+      padding-top: 1rem;
+    }
+
+    .footer-bottom span { color: #2ecc71; }
+  </style>
+</head>
+<body>
+
+<!-- ================= SELLER NAVBAR ================= -->
+<nav class="navbar">
+
+  <!-- Logo + Seller Badge -->
+  <div style="display:flex;align-items:center;gap:0.8rem;">
+    <a href="{% url 'seller_home' %}" class="logo">
+      <div class="logo-box">S</div>
+      ShopNest
+    </a>
+    <span class="seller-badge">Seller</span>
+  </div>
+
+  <!-- Seller Navigation Links -->
+  <div class="nav-links">
+
+    <!-- Dashboard / Home -->
+    <a href="{% url 'seller_home' %}" class="active">
+      <i class="fa-solid fa-chart-line"></i> Dashboard
+    </a>
+
+    <!-- My Products -->
+    <a href="#">
+      <i class="fa-solid fa-box"></i> My Products
+    </a>
+
+    <!-- Orders received -->
+    <a href="#">
+      <i class="fa-regular fa-clipboard-list"></i> Orders
+    </a>
+
+    <!-- Returns / Refunds -->
+    <a href="#">
+      <i class="fa-solid fa-rotate-left"></i> Returns
+    </a>
+
+    <!-- Add new product (highlighted as primary action) -->
+    <a href="#" style="background:#27ae60;color:#fff;padding:0.4rem 1rem;border-radius:6px;">
+      <i class="fa-solid fa-plus"></i> Add Product
+    </a>
+
+    <!-- Profile dropdown -->
+    <div class="profile-dropdown">
+      <button class="profile-btn">
+        <i class="fa-solid fa-store"></i>
+      </button>
+
+      <div class="dropdown-menu">
+        <a href="#">
+          <i class="fa-regular fa-user"></i> My Profile
+        </a>
+        <a href="#">
+          <i class="fa-solid fa-box"></i> My Products
+        </a>
+        <a href="#">
+          <i class="fa-regular fa-clipboard-list"></i> My Orders
+        </a>
+        <!-- Logout in red -->
+        <a href="#" class="logout-link">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ================= PAGE CONTENT ================= -->
+{% block content %}
+
+<!-- Seller Welcome Banner -->
+<section class="seller-hero">
+  <h1>Welcome, {{ user.username }}! 🏪</h1>
+  <p>Manage your products, track orders, and grow your business.</p>
+  <a href="#" class="hero-btn">
+    <i class="fa-solid fa-plus"></i> Add New Product
+  </a>
+  <a href="#" class="hero-btn">
+    <i class="fa-regular fa-clipboard-list"></i> View Orders
+  </a>
+</section>
+
+<!-- Seller Stats Cards -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
+    <div class="stat-number">{{ total_products|default:"0" }}</div>
+    <div class="stat-label">Total Products</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-regular fa-clipboard-list"></i></div>
+    <div class="stat-number">{{ total_orders|default:"0" }}</div>
+    <div class="stat-label">Total Orders</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
+    <div class="stat-number">{{ pending_orders|default:"0" }}</div>
+    <div class="stat-label">Pending Orders</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon"><i class="fa-solid fa-rotate-left"></i></div>
+    <div class="stat-number">{{ total_returns|default:"0" }}</div>
+    <div class="stat-label">Returns</div>
+  </div>
+</div>
+
+<!-- Quick Action Buttons -->
+<div class="quick-actions">
+  <h3>Quick Actions</h3>
+  <a href="#" class="action-btn">
+    <i class="fa-solid fa-plus"></i> Add Product
+  </a>
+  <a href="#" class="action-btn-outline">
+    <i class="fa-solid fa-list"></i> Manage Products
+  </a>
+  <a href="#" class="action-btn-outline">
+    <i class="fa-regular fa-clipboard-list"></i> View Orders
+  </a>
+  <a href="#" class="action-btn-outline">
+    <i class="fa-solid fa-rotate-left"></i> Handle Returns
+  </a>
+</div>
+
+<!-- Recent Orders Table -->
+<h2 class="section-title">Recent Orders</h2>
+
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Product</th>
+        <th>Customer</th>
+        <th>Amount</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in recent_orders %}
+      <tr>
+        <td>#{{ order.order_id }}</td>
+        <td>{{ order.product_name }}</td>
+        <td>{{ order.customer_name }}</td>
+        <td>Rs. {{ order.total_price }}</td>
+        <td>
+          <!-- Show status with color-coded badge -->
+          <span class="status-badge status-{{ order.status|lower }}">
+            {{ order.status }}
+          </span>
+        </td>
+      </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5" style="text-align:center;color:#999;padding:2rem;">
+            No orders yet. Start selling!
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-section">
+      <h3>ShopNest</h3>
+      <p>Empowering sellers to reach customers across Pakistan.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Seller Links</h4>
+      <ul>
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">My Products</a></li>
+        <li><a href="#">My Orders</a></li>
+        <li><a href="#">Add Product</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Seller Guide</a></li>
+        <li><a href="#">Contact Support</a></li>
+        <li><a href="#">Return Policy</a></li>
+        <li><a href="#">FAQs</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Contact</h4>
+      <p>Email: sellers@shopnest.com</p>
+      <p>Phone: +92 300 1234567</p>
+      <p>Lahore, Pakistan</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2024 <span>ShopNest</span> | All Rights Reserved
+  </div>
+</footer>
+
+</body>
+</html>

@@ -492,7 +492,8 @@
     <div class="divider">or continue with email</div>
 
     <!-- Form -->
-    <form action="#" method="post">
+    <form action="{% url 'login' %}" method="post">
+      {% csrf_token %}
       <div class="field">
         <label for="email">Email address</label>
         <div class="input-wrap">

@@ -1,0 +1,539 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ShopNest - Home{% endblock %}</title>
+
+  <!-- Google Fonts - same as base -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <style>
+    /* ========================================
+       USER NAVBAR STYLES
+       Extends base styles with user-specific nav
+    ======================================== */
+
+    /* Navbar layout */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    /* Logo area */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      text-decoration: none;
+    }
+
+    .logo-box {
+      background: #1a1a1a;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    /* Nav links container */
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    /* Regular nav links */
+    .nav-links a {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #444;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: #1a1a1a;
+    }
+
+    /* Active link highlight */
+    .nav-links a.active {
+      color: #1a1a1a;
+      border-bottom: 2px solid #1a1a1a;
+      padding-bottom: 2px;
+    }
+
+    /* Cart icon with item count badge */
+    .nav-cart {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .nav-cart .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -10px;
+      background: #e74c3c;
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Profile dropdown wrapper */
+    .profile-dropdown {
+      position: relative;
+    }
+
+    /* Profile icon button */
+    .profile-btn {
+      background: #f4f4f4;
+      border: none;
+      border-radius: 50%;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      color: #444;
+      transition: background 0.2s;
+    }
+
+    .profile-btn:hover {
+      background: #e0e0e0;
+    }
+
+    /* Dropdown menu (hidden by default) */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 48px;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-width: 160px;
+      z-index: 200;
+      overflow: hidden;
+    }
+
+    /* Show dropdown on hover */
+    .profile-dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1.1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: #333;
+      text-decoration: none;
+      transition: background 0.15s;
+    }
+
+    .dropdown-menu a:hover {
+      background: #f8f8f8;
+    }
+
+    /* Logout styled in red to stand out */
+    .dropdown-menu .logout-link {
+      color: #e74c3c;
+      border-top: 1px solid #f0f0f0;
+    }
+
+    /* ========================================
+       HERO / WELCOME BANNER
+    ======================================== */
+    .user-hero {
+      background: linear-gradient(135deg, #1a1a1a 0%, #3a3a3a 100%);
+      color: #fff;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .user-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .user-hero p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.1rem;
+      opacity: 0.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-btn {
+      display: inline-block;
+      background: #fff;
+      color: #1a1a1a;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 600;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .hero-btn:hover {
+      opacity: 0.85;
+    }
+
+    /* ========================================
+       QUICK STATS BAR (cart count, wishlist etc.)
+    ======================================== */
+    .user-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      background: #f9f9f9;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #eee;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .stat-item i {
+      color: #1a1a1a;
+    }
+
+    /* ========================================
+       PRODUCT SECTION PLACEHOLDER
+    ======================================== */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      color: #1a1a1a;
+      text-align: center;
+      margin: 2.5rem 0 1.5rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.5rem;
+      padding: 0 2rem 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Sample product card */
+    .product-card {
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .product-card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      transform: translateY(-4px);
+    }
+
+    .product-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 2rem;
+    }
+
+    .product-info {
+      padding: 1rem;
+    }
+
+    .product-info h3 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+      color: #1a1a1a;
+    }
+
+    .product-info .price {
+      font-weight: 700;
+      color: #1a1a1a;
+      font-size: 1rem;
+    }
+
+    .add-cart-btn {
+      display: block;
+      width: 100%;
+      padding: 0.55rem;
+      margin-top: 0.75rem;
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+
+    .add-cart-btn:hover {
+      background: #333;
+    }
+
+    /* ========================================
+       FOOTER (same as base)
+    ======================================== */
+    .footer {
+      background: #1a1a1a;
+      color: #ccc;
+      padding: 2.5rem 2rem 1rem;
+    }
+
+    .footer-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 2rem;
+      max-width: 1100px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .footer-section h3, .footer-section h4 {
+      font-family: 'Playfair Display', serif;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-section p, .footer-section li {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    .footer-section ul { list-style: none; padding: 0; }
+    .footer-section ul li a { color: #aaa; text-decoration: none; }
+    .footer-section ul li a:hover { color: #fff; }
+
+    .footer-bottom {
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      color: #666;
+      border-top: 1px solid #333;
+      padding-top: 1rem;
+    }
+
+    .footer-bottom span { color: #fff; }
+  </style>
+</head>
+<body>
+
+<!-- ================= USER NAVBAR ================= -->
+<nav class="navbar">
+
+  <!-- Logo -->
+  <a href="{% url 'home' %}" class="logo">
+    <div class="logo-box">S</div>
+    ShopNest
+  </a>
+
+  <!-- Navigation Links -->
+  <div class="nav-links">
+
+    <!-- Home -->
+    <a href="{% url 'home' %}" class="active">Home</a>
+
+    <!-- Products -->
+    <a href="#">Products</a>
+
+    <!-- Wishlist with heart icon -->
+    <a href="#">
+      <i class="fa-regular fa-heart"></i> Wishlist
+    </a>
+
+    <!-- Orders -->
+    <a href="#">
+      <i class="fa-regular fa-clipboard-list"></i> Orders
+    </a>
+
+    <!-- Cart with item count badge -->
+    <a href="#" class="nav-cart">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <!-- cart_count is passed from the view context -->
+      {% if cart_count %}
+        <span class="cart-badge">{{ cart_count }}</span>
+      {% endif %}
+    </a>
+
+    <!-- Profile dropdown (hover to open) -->
+    <div class="profile-dropdown">
+      <!-- Circular profile icon button -->
+      <button class="profile-btn">
+        <i class="fa-regular fa-user"></i>
+      </button>
+
+      <!-- Dropdown options -->
+      <div class="dropdown-menu">
+        <a href="#">
+          <i class="fa-regular fa-user"></i> My Profile
+        </a>
+        <a href="#">
+          <i class="fa-regular fa-box"></i> My Orders
+        </a>
+        <a href="#">
+          <i class="fa-regular fa-heart"></i> Wishlist
+        </a>
+        <!-- Logout link styled in red -->
+        <a href="#" class="logout-link">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </a>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ================= PAGE CONTENT ================= -->
+{% block content %}
+
+<!-- Welcome Hero Banner -->
+<section class="user-hero">
+  <h1>Welcome back, {{ user.username }}! 👋</h1>
+  <p>Discover amazing products curated just for you.</p>
+  <a href="{% url 'products' %}" class="hero-btn">Browse Products</a>
+</section>
+
+<!-- Quick Stats Bar -->
+<div class="user-stats">
+  <div class="stat-item">
+    <i class="fa-solid fa-cart-shopping"></i>
+    <span>{{ cart_count|default:"0" }} items in cart</span>
+  </div>
+  <div class="stat-item">
+    <i class="fa-regular fa-heart"></i>
+    <span>{{ wishlist_count|default:"0" }} in wishlist</span>
+  </div>
+  <div class="stat-item">
+    <i class="fa-regular fa-box"></i>
+    <span>{{ order_count|default:"0" }} orders placed</span>
+  </div>
+</div>
+
+<!-- Featured Products Section -->
+<h2 class="section-title">Featured Products</h2>
+
+<div class="products-grid">
+  <!-- Loop through products passed from view -->
+  {% for product in products %}
+  <div class="product-card">
+    <!-- Product Image -->
+    <div class="product-img">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width:100%;height:100%;object-fit:cover;">
+      {% else %}
+        <i class="fa-regular fa-image"></i>
+      {% endif %}
+    </div>
+
+    <!-- Product Info -->
+    <div class="product-info">
+      <h3>{{ product.name }}</h3>
+      <span class="price">Rs. {{ product.price }}</span>
+
+      <!-- Add to Cart button links to add-cart view -->
+      <a href="#" class="add-cart-btn">
+        <i class="fa-solid fa-cart-plus"></i> Add to Cart
+      </a>
+    </div>
+  </div>
+  {% empty %}
+    <!-- Show message if no products available -->
+    <p style="text-align:center;color:#888;grid-column:1/-1;">No products found.</p>
+  {% endfor %}
+</div>
+
+{% endblock %}
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-section">
+      <h3>ShopNest</h3>
+      <p>Your modern shopping destination for quality products at the best prices.</p>
+    </div>
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Products</a></li>
+        <li><a href="#">Orders</a></li>
+        <li><a href="#">Cart</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Shipping Info</a></li>
+        <li><a href="#">Returns</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h4>Contact</h4>
+      <p>Email: support@shopnest.com</p>
+      <p>Phone: +92 300 1234567</p>
+      <p>Lahore, Pakistan</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2024 <span>ShopNest</span> | All Rights Reserved
+  </div>
+</footer>
+
+</body>
+</html>
