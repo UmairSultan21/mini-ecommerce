@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}ShopNest{% endblock %}</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+<nav class="navbar">
+  <div class="logo">
+    <div class="logo-box">S</div>
+    ShopNest
+  </div>
+
+  <div class="nav-links">
+    <a href="{% url 'home' %}">Home</a>
+
+    <!-- LOGIN BUTTON -->
+    <a href="{% url 'login' %}" class="nav-login">Login</a>
+  </div>
+</nav>
+
+<!-- ================= PAGE CONTENT ================= -->
+{% block content %}
+{% endblock %}
+
+<!-- ================= FOOTER ================= -->
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="footer-container">
+
+    <!-- Brand Section -->
+    <div class="footer-section">
+      <h3>ShopNest</h3>
+      <p>Your modern shopping destination for quality products at the best prices.</p>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="footer-section">
+      <h4>Quick Links</h4>
+      <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'products' %}">Products</a></li>
+        <li><a href="{% url 'orders' %}">Orders</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+      </ul>
+    </div>
+
+    <!-- Help -->
+    <div class="footer-section">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Contact Us</a></li>
+        <li><a href="#">FAQs</a></li>
+        <li><a href="#">Shipping Info</a></li>
+        <li><a href="#">Returns</a></li>
+      </ul>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-section">
+      <h4>Contact</h4>
+      <p>Email: support@shopnest.com</p>
+      <p>Phone: +92 300 1234567</p>
+      <p>Lahore, Pakistan</p>
+    </div>
+
+  </div>
+
+  <div class="footer-bottom">
+    © 2024 <span>ShopNest</span> | All Rights Reserved
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile - ShopNest</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+
+    /* ================= BASE THEME ================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --ink: #1a1a2e;
+      --accent: #e94560;
+      --soft: #f8f4f0;
+      --border: #e8e4e0;
+      --white: #ffffff;
+      --nav-h: 70px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--soft);
+      color: var(--ink);
+      padding-top: var(--nav-h);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ================= HEADER ================= */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: var(--nav-h);
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+    }
+
+    .logo-box {
+      width: 38px;
+      height: 38px;
+      background: var(--accent);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+    }
+
+    /* ================= PROFILE SECTION ================= */
+    .main-content {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .profile-card {
+      background: var(--white);
+      padding: 2rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    /* Avatar */
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: white;
+      font-size: 32px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: auto;
+      margin-bottom: 1rem;
+    }
+
+    .profile-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .profile-email {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Info Section */
+    .profile-info {
+      text-align: left;
+      margin-top: 1rem;
+    }
+
+    .info-row {
+      margin-bottom: 1rem;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: gray;
+    }
+
+    .info-value {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Button */
+    .edit-btn {
+      margin-top: 1.5rem;
+      padding: 10px 20px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .edit-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* ================= FOOTER ================= */
+    footer {
+      background: var(--ink);
+      color: rgba(255,255,255,0.7);
+      padding: 2rem;
+      font-size: 14px;
+    }
+
+    .footer-container {
+      max-width: 1100px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .footer-section {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .footer-title {
+      font-family: 'Playfair Display', serif;
+      color: white;
+      margin-bottom: 10px;
+    }
+
+    .footer-links {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 6px;
+    }
+
+    .footer-links a {
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      margin-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 1rem;
+      font-size: 12px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <nav class="navbar">
+    <div class="logo">
+      <div class="logo-box">S</div>
+      ShopNest
+    </div>
+  </nav>
+
+  <!-- PROFILE -->
+  <main class="main-content">
+
+    <div class="profile-card">
+
+      <!-- Avatar -->
+      <div class="avatar">U</div>
+
+      <!-- Name + Email -->
+      <div class="profile-name">Umair Sultan</div>
+      <div class="profile-email">umair@example.com</div>
+
+      <!-- Info -->
+      <div class="profile-info">
+
+        <div class="info-row">
+          <div class="info-label">Full Name</div>
+          <div class="info-value">Umair Sultan</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">Email</div>
+          <div class="info-value">umair@example.com</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">Phone</div>
+          <div class="info-value">+92 300 1234567</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">Address</div>
+          <div class="info-value">Lahore, Pakistan</div>
+        </div>
+
+      </div>
+
+      <!-- Button -->
+      <a href="edit_profile.html" class="edit-btn">Edit Profile</a>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+
+    <div class="footer-container">
+
+      <div class="footer-section">
+        <div class="footer-title">ShopNest</div>
+        <p>Your trusted e-commerce platform for a smooth shopping experience.</p>
+      </div>
+
+      <div class="footer-section">
+        <div class="footer-title">Quick Links</div>
+        <ul class="footer-links">
+          <li><a href="home.html">Home</a></li>
+          <li><a href="product_list.html">Products</a></li>
+          <li><a href="orders.html">Orders</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <div class="footer-title">Contact</div>
+        <p>Email: support@shopnest.com</p>
+        <p>Phone: +92 300 1234567</p>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      &copy; 2024 ShopNest | All Rights Reserved
+    </div>
+
+  </footer>
+
+</body>
+
+<script>
+window.onload = function () {
+  document.querySelector(".profile-name").innerText = localStorage.getItem("name") || "Umair Sultan";
+  document.querySelector(".profile-email").innerText = localStorage.getItem("email") || "umair@example.com";
+
+  document.querySelectorAll(".info-value")[0].innerText = localStorage.getItem("name") || "Umair Sultan";
+  document.querySelectorAll(".info-value")[1].innerText = localStorage.getItem("email") || "umair@example.com";
+  document.querySelectorAll(".info-value")[2].innerText = localStorage.getItem("phone") || "+92 300 1234567";
+  document.querySelectorAll(".info-value")[3].innerText = localStorage.getItem("address") || "Lahore, Pakistan";
+
+  // Avatar initial
+  let name = localStorage.getItem("name") || "Umair";
+  document.querySelector(".avatar").innerText = name.charAt(0).toUpperCase();
+};
+</script>
+
+</html>
