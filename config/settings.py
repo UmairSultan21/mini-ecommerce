@@ -130,3 +130,20 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 
 ]
+
+# Session expires after 30 minutes (1800 seconds)
+SESSION_COOKIE_AGE = 1800
+
+# Expire session when browser closes (optional)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Save session on every request (keeps user active)
+SESSION_SAVE_EVERY_REQUEST = True
+
+SESSION_COOKIE_HTTPONLY = True
+
+SESSION_COOKIE_SECURE = False  # True only if using HTTPS
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'

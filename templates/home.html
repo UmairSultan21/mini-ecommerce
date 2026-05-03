@@ -17,26 +17,23 @@
 
   <div class="products-grid">
 
+    {% for product in products %}
     <div class="product-card">
-      <img src="{% static 'images/product1.jpg' %}" alt="">
-      <h3>Smart Watch</h3>
-      <p>$120</p>
-      <button>Add to Cart</button>
-    </div>
 
-    <div class="product-card">
-      <img src="{% static 'images/product2.jpg' %}" alt="">
-      <h3>Headphones</h3>
-      <p>$80</p>
-      <button>Add to Cart</button>
-    </div>
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+      {% else %}
+        <img src="{% static 'images/product1.jpg' %}" alt="">
+      {% endif %}
 
-    <div class="product-card">
-      <img src="{% static 'images/product3.jpg' %}" alt="">
-      <h3>Laptop</h3>
-      <p>$900</p>
+      <h3>{{ product.name }}</h3>
+      <p>Rs. {{ product.price }}</p>
+
       <button>Add to Cart</button>
     </div>
+    {% empty %}
+      <p>No products available</p>
+    {% endfor %}
 
   </div>
 </section>

@@ -533,7 +533,7 @@
       <i class="fa-solid fa-rotate-left"></i> Returns
     </a>
 
-    <a href="#" class="nav-cta">
+    <a href="{% url 'add_product' %}" class="nav-cta">
       <i class="fa-solid fa-plus"></i> Add Product
     </a>
 
@@ -541,6 +541,7 @@
       <button class="profile-btn">
         <i class="fa-solid fa-store"></i>
       </button>
+
       <div class="dropdown-menu">
         <a href="#"><i class="fa-regular fa-user"></i> My Profile</a>
         <a href="#"><i class="fa-solid fa-box"></i> My Products</a>
@@ -552,8 +553,8 @@
     </div>
 
   </div>
-</nav>
 
+</nav>
 <!-- ═══════════ PAGE CONTENT ═══════════ -->
 {% block content %}
 
@@ -563,7 +564,7 @@
     <div class="hero-tag">✦ Seller Dashboard</div>
     <h1>Welcome, <span>{{ user.username }}</span>!</h1>
     <p>Manage your products, track orders, and grow your business.</p>
-    <a href="#" class="hero-btn">
+    <a href="{% url 'add_product' %}" class="hero-btn">
       <i class="fa-solid fa-plus" style="margin-right:6px;"></i> Add New Product
     </a>
     <a href="#" class="hero-btn-outline">
