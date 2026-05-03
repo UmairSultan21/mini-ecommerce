@@ -1,30 +1,32 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Product
+
+from .models import Product, Cart, CartItem, Wishlist
 
 
-# -------- BASIC PAGES --------
-def user_home(request):
-    products = Product.objects.all().order_by('-id')[:20]  # latest 20 products
-
-    return render(request, "store/user_home.html", {
-        "products": products
-    })
+# =========================================================
+# BASIC PAGES
+# =========================================================
 
 def home(request):
-    products = Product.objects.all().order_by('-id')  # ALL products
+    products = Product.objects.all().order_by('-id')
+    return render(request, "home.html", {"products": products})
 
-    return render(request, "home.html", {
-        "products": products
-    })
 
 def products(request):
     return render(request, "products.html")
 
+
 def orders(request):
     return render(request, "orders.html")
 
+
+# =========================================================
+# ADD PRODUCT (SELLER)
+# =========================================================
+
+@login_required(login_url='login')
 def add_product(request):
     if request.method == "POST":
         name = request.POST.get("name")
@@ -33,161 +35,152 @@ def add_product(request):
         category = request.POST.get("category")
         image = request.FILES.get("image")
 
-        # 🔥 DUPLICATE CHECK (same name + category)
         if Product.objects.filter(name=name, category=category).exists():
-            messages.warning(request, "⚠ Product already exists in this category!")
+            messages.warning(request, "Product already exists in this category!")
             return redirect("add_product")
 
-        try:
-            Product.objects.create(
-                name=name,
-                price=price,
-                description=description,
-                category=category,
-                image=image
-            )
+        Product.objects.create(
+            name=name,
+            price=price,
+            description=description,
+            category=category,
+            image=image
+        )
 
-            messages.success(request, "✅ Product added successfully!")
-            return redirect("seller_home")
-
-        except Exception as e:
-            messages.error(request, f"❌ Error adding product: {str(e)}")
-            return redirect("add_product")
+        messages.success(request, "Product added successfully!")
+        return redirect("seller_home")
 
     return render(request, "store/add_product.html")
 
 
-# -------- ROLE CHECK FUNCTION --------
-def role_required(role):
-    def decorator(view_func):
-        def wrapper(request, *args, **kwargs):
-            if not request.user.is_authenticated:
-                return redirect('login')
+# =========================================================
+# HELPERS
+# =========================================================
 
-            if getattr(request.user, 'role', None) != role:
-                return redirect('login')
-
-            return view_func(request, *args, **kwargs)
-        return wrapper
-    return decorator
+def _get_cart(user):
+    cart, _ = Cart.objects.get_or_create(user=user)
+    return cart
 
 
-# -------- ROLE BASED HOME PAGES --------
-
-# @login_required
-# def user_home(request):
-#     return render(request, "store/user_home.html")
-
-
-@login_required
-def seller_home(request):
-    return render(request, "store/seller_home.html")
-
-
-@login_required
-def admin_home(request):
-    return render(request, "store/admin_home.html")
-
-
-from django.shortcuts         import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib           import messages
-from .models                  import Product, Cart, CartItem, Wishlist
-
-
-# ─────────────────────────────────────────
-#  HELPER — get cart item count for navbar
-# ─────────────────────────────────────────
 def _cart_count(user):
-    """Returns total item count in user's cart (0 if no cart yet)."""
-    try:
-        return user.cart.total_items()
-    except Cart.DoesNotExist:
-        return 0
+    return _get_cart(user).items.count()
 
 
 def _wishlist_count(user):
-    return user.wishlist.count()
+    return Wishlist.objects.filter(user=user).count()
 
 
 def _order_count(user):
-    """Will use Order model once orders app is wired up."""
     try:
         return user.orders.count()
-    except Exception:
+    except:
         return 0
 
 
-# ─────────────────────────────────────────
-#  USER HOME — top 20 latest products
-# ─────────────────────────────────────────
+# =========================================================
+# USER HOME
+# =========================================================
+
 @login_required(login_url='login')
 def user_home(request):
     products = Product.objects.all().order_by('-id')[:20]
 
-    # IDs the user has already wishlisted (to toggle heart icon)
-    wishlisted_ids = set(
-        Wishlist.objects.filter(user=request.user)
-                        .values_list('product_id', flat=True)
-    )
+    wishlisted_ids = Wishlist.objects.filter(
+        user=request.user
+    ).values_list('product_id', flat=True)
 
-    context = {
-        'products':       products,
-        'wishlisted_ids': wishlisted_ids,
-        'cart_count':     _cart_count(request.user),
-        'wishlist_count': _wishlist_count(request.user),
-        'order_count':    _order_count(request.user),
-    }
-    return render(request, 'store/user_home.html', context)
+    return render(request, "store/user_home.html", {
+        "products": products,
+        "wishlisted_ids": set(wishlisted_ids),
+
+        "cart_count": _cart_count(request.user),
+        "wishlist_count": _wishlist_count(request.user),
+        "order_count": _order_count(request.user),
+    })
 
 
-# ─────────────────────────────────────────
-#  ADD TO CART
-# ─────────────────────────────────────────
+# =========================================================
+# ROLE PAGES
+# =========================================================
+
+@login_required(login_url='login')
+def seller_home(request):
+    return render(request, "store/seller_home.html")
+
+
+@login_required(login_url='login')
+def admin_home(request):
+    return render(request, "store/admin_home.html")
+
+
+# =========================================================
+# CART
+# =========================================================
+
 @login_required(login_url='login')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
+    cart = _get_cart(request.user)
 
-    # Get or create the user's cart
-    cart, _ = Cart.objects.get_or_create(user=request.user)
+    item, created = CartItem.objects.get_or_create(
+        cart=cart,
+        product=product
+    )
 
-    # Get or create the cart item; increment if already in cart
-    cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
     if not created:
-        cart_item.quantity += 1
-        cart_item.save()
-        messages.success(request, f'"{product.name}" quantity updated in cart.')
-    else:
-        messages.success(request, f'"{product.name}" added to cart!')
+        item.quantity += 1
+        item.save()
 
-    # Redirect back to wherever the user came from
+    messages.success(request, "Product added/updated in cart.")
     return redirect(request.META.get('HTTP_REFERER', 'user_home'))
 
 
-# ─────────────────────────────────────────
-#  REMOVE FROM CART
-# ─────────────────────────────────────────
+@login_required(login_url='login')
+def cart_page(request):
+    cart = _get_cart(request.user)
+
+    cart_items = CartItem.objects.filter(
+        cart=cart
+    ).select_related('product')
+
+    return render(request, "store/user_cart.html", {
+        "cart_items": cart_items
+    })
+
+
 @login_required(login_url='login')
 def remove_from_cart(request, item_id):
-    cart_item = get_object_or_404(CartItem, id=item_id, cart__user=request.user)
-    cart_item.delete()
-    messages.info(request, 'Item removed from cart.')
-    return redirect(request.META.get('HTTP_REFERER', 'user_home'))
+    cart = _get_cart(request.user)
+
+    item = get_object_or_404(CartItem, id=item_id, cart=cart)
+    item.delete()
+
+    messages.info(request, "Item removed from cart.")
+    return redirect('user_cart')
 
 
-# ─────────────────────────────────────────
-#  ADD / TOGGLE WISHLIST
-# ─────────────────────────────────────────
+# =========================================================
+# WISHLIST
+# =========================================================
+
 @login_required(login_url='login')
 def toggle_wishlist(request, product_id):
     product = get_object_or_404(Product, id=product_id)
 
-    existing = Wishlist.objects.filter(user=request.user, product=product).first()
-    if existing:
-        existing.delete()
-        messages.info(request, f'"{product.name}" removed from wishlist.')
+    item = Wishlist.objects.filter(user=request.user, product=product).first()
+
+    if item:
+        item.delete()
     else:
         Wishlist.objects.create(user=request.user, product=product)
-        messages.success(request, f'"{product.name}" added to wishlist!')
 
     return redirect(request.META.get('HTTP_REFERER', 'user_home'))
+
+
+@login_required(login_url='login')
+def wishlist_page(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+
+    return render(request, "store/user_wishlist.html", {
+        "wishlist_items": wishlist_items
+    })

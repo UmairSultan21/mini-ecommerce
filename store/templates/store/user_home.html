@@ -441,7 +441,7 @@
     <a href="{% url 'user_home' %}" class="active">Home</a>
     <a href="#">Products</a>
 
-    <a href="#">
+    <a href="{% url 'user_wishlist' %}">
       <i class="fa-regular fa-heart"></i> Wishlist
     </a>
 
@@ -449,7 +449,7 @@
       <i class="fa-regular fa-clipboard-list"></i> Orders
     </a>
 
-    <a href="#" class="nav-cart">
+    <a href="{% url 'user_cart' %}" class="nav-cart">
       <i class="fa-solid fa-cart-shopping"></i>
       {% if cart_count %}
         <span class="cart-badge">{{ cart_count }}</span>
@@ -521,8 +521,15 @@
     <div class="product-info">
       <h3>{{ product.name }}</h3>
       <span class="price">Rs. {{ product.price }}</span>
-      <a href="#" class="add-cart-btn">
+      <a href="{% url 'add_to_cart' product.id %}" class="add-cart-btn">
         <i class="fa-solid fa-cart-plus"></i> Add to Cart
+      </a>
+      <a href="{% url 'toggle_wishlist' product.id %}" class="add-cart-btn" style="margin-top:8px;background:#e94560;">
+        {% if product.id in wishlisted_ids %}
+        <i class="fa-solid fa-heart"></i> Remove Wishlist
+        {% else %}
+        <i class="fa-regular fa-heart"></i> Add to Wishlist
+        {% endif %}
       </a>
     </div>
   </div>
